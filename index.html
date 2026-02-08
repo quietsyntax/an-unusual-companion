@@ -1,775 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>For Havya | The Career Map</title>
-    
-    <!-- Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Marked for Markdown parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Havya</title>
 
-    <style>
-        /* Fonts */
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap');
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fde2e4, #fadadd);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Segoe UI", sans-serif;
+  }
 
-        :root {
-            --bg-deep: #030712;
-            --glass-bg: rgba(17, 24, 39, 0.7);
-            --glass-border: rgba(55, 65, 81, 0.5);
-            --primary: #2dd4bf; /* Teal */
-            --accent: #f472b6; /* Pink */
-        }
+  .card {
+    background: white;
+    max-width: 500px;
+    width: 90%;
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    text-align: center;
+    animation: fadeIn 2s ease;
+  }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-deep);
-            color: #e2e8f0;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
+  h1 {
+    color: #e63946;
+    margin-bottom: 15px;
+    font-size: 28px;
+  }
 
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .heart {
+    font-size: 42px;
+    animation: beat 1s infinite;
+    margin-bottom: 15px;
+  }
 
-        /* Glassmorphism */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
+  p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #444;
+    margin: 10px 0;
+  }
 
-        /* Animations */
-        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  .signature {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+    font-style: italic;
+  }
 
-        .pulse-glow { animation: pulseGlow 3s infinite; }
-        @keyframes pulseGlow { 
-            0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(45, 212, 191, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
-        }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #111827; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-        /* Modal Transitions */
-        .modal-card {
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-        }
-        .modal-hidden {
-            transform: translateY(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-        .modal-visible {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        /* Desktop Modal adjustments */
-        @media (min-width: 768px) {
-            .modal-hidden { transform: translate(-50%, -40%) scale(0.95); opacity: 0; }
-            .modal-visible { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        /* AI Chat Styles */
-        .chat-bubble {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-        .chat-user {
-            background-color: #2dd4bf;
-            color: #000;
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-        .chat-ai {
-            background-color: #1e293b;
-            color: #e2e8f0;
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-            border: 1px solid #334155;
-        }
-        .typing-dot {
-            display: inline-block;
-            width: 6px; height: 6px;
-            background-color: #94a3b8;
-            border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out both;
-            margin: 0 2px;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-    </style>
+</style>
 </head>
-<body class="relative min-h-screen pb-20">
+<body>
 
-    <!-- STARS BACKGROUND -->
-    <div class="fixed inset-0 z-0 opacity-40 pointer-events-none" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px;"></div>
+<div class="card">
+  <h1>हव्या 🌸</h1>
+  <div class="heart">🤍</div>
 
-    <!-- 1. INTRO OVERLAY -->
-    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-4 text-center">
-        <div class="mb-6 relative">
-            <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-teal-500 to-pink-500 opacity-75 blur"></div>
-            <div class="relative bg-black rounded-full p-4">
-                <i class="ph-fill ph-sparkle text-4xl text-teal-400"></i>
-            </div>
-        </div>
-        <h1 class="font-mono text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-pink-400 mb-4">
-            <span id="type-text"></span><span class="animate-pulse">_</span>
-        </h1>
-        <p id="intro-sub" class="text-slate-500 text-sm mb-8 opacity-0 transition-opacity duration-1000">
-            Designed for one person. With one dream. And one future in mind.
-        </p>
-        <button id="enter-btn" onclick="app.enterSystem()" class="opacity-0 translate-y-4 transition-all duration-700 px-8 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-full shadow-lg shadow-teal-900/50 flex items-center gap-2">
-            BEGIN THE JOURNEY <i class="ph-bold ph-arrow-right"></i>
-        </button>
-    </div>
+  <p>
+    नाराज़गी अगर शब्द होती,  
+    तो शायद मैं पढ़ नहीं पाता,  
+    तुम्हारी ख़ामोशी में जो दर्द है,  
+    उसे आज समझना चाहता।
+  </p>
 
-    <!-- 2. MAIN APP -->
-    <div id="app-container" class="relative z-10 opacity-0 transition-opacity duration-1000 hidden">
-        
-        <!-- HEADER -->
-        <header class="sticky top-0 z-40 glass-panel border-b-0 border-b-slate-800">
-            <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="bg-gradient-to-br from-teal-500 to-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold shadow-lg">H</div>
-                    <div>
-                        <h1 class="font-bold text-sm md:text-base tracking-wide text-slate-100">HAVYA'S <span class="text-teal-400">FUTURE</span></h1>
-                        <p class="text-[10px] text-teal-500 font-mono tracking-widest flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-                            SYSTEM: ONLINE
-                        </p>
-                    </div>
-                </div>
-                <!-- Motivation Button -->
-                <button onclick="app.triggerMotivation()" class="text-xs flex items-center gap-2 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 px-3 py-1.5 rounded-full border border-pink-500/30 transition-all">
-                    <i class="ph-fill ph-heart"></i> <span class="hidden sm:inline">Panic Button</span>
-                </button>
-            </div>
-            
-            <!-- NAV TABS (Scrollable) -->
-            <div class="border-t border-slate-800 bg-slate-900/50 backdrop-blur">
-                <div class="max-w-7xl mx-auto px-4 overflow-x-auto no-scrollbar">
-                    <div class="flex space-x-6 h-12 items-center text-sm font-medium whitespace-nowrap">
-                        <button onclick="app.switchTab('dashboard')" class="tab-btn text-teal-400 font-bold border-b-2 border-teal-500" data-target="dashboard">Dashboard</button>
-                        <button onclick="app.switchTab('ai')" class="tab-btn text-slate-400 hover:text-slate-200 flex items-center gap-1" data-target="ai">AI Mentor <i class="ph-fill ph-sparkle text-yellow-400"></i></button>
-                        <button onclick="app.switchTab('central-grad')" class="tab-btn text-slate-400 hover:text-slate-200" data-target="central-grad">Grad (Central)</button>
-                        <button onclick="app.switchTab('state-grad')" class="tab-btn text-slate-400 hover:text-slate-200" data-target="state-grad">Grad (Bihar)</button>
-                        <button onclick="app.switchTab('central-12th')" class="tab-btn text-slate-400 hover:text-slate-200" data-target="central-12th">12th (Central)</button>
-                        <button onclick="app.switchTab('state-12th')" class="tab-btn text-slate-400 hover:text-slate-200" data-target="state-12th">12th (Bihar)</button>
-                        <button onclick="app.switchTab('notes')" class="tab-btn text-slate-400 hover:text-slate-200" data-target="notes">My Notes</button>
-                    </div>
-                </div>
-            </div>
-        </header>
+  <p>
+    अगर मेरी किसी बात ने  
+    मन को ठेस पहुँचाई हो,  
+    तो उसे भूल नहीं,  
+    मेरी नासमझी समझ लेना।
+  </p>
 
-        <main class="max-w-7xl mx-auto p-4 md:p-8 min-h-screen">
-            
-            <!-- VIEW: DASHBOARD -->
-            <section id="view-dashboard" class="space-y-6 fade-in-up">
-                <!-- Message -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-l-4 border-teal-500">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Hello, Havya.</h2>
-                    <p class="text-slate-400 max-w-2xl text-sm leading-relaxed">
-                        You carry a goal that is bigger than comfort and stronger than fear.  
-                        LBSNAA is not just a place — it is a responsibility waiting for you.  
-                        Your parents’ pride, your own strength, and your future authority  
-                        all begin with the effort you put in today.
-                        <br><br>
-                        <span class="text-teal-400 font-semibold">"There is someone ❤️ who believes in you more than you believe in yourself, and dreams every day of seeing you clear UPSC.""</span>
-                    </p>
-                </div>
+  <p>
+    तुम्हारी मुस्कान  
+    कोई आदत नहीं,  
+    वो वजह है  
+    कि दिन बेहतर लगते हैं।
+  </p>
 
-                <!-- Shortcuts -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div onclick="app.switchTab('ai')" class="cursor-pointer hover:bg-slate-800 transition-colors bg-gradient-to-br from-indigo-900/50 to-purple-900/50 p-4 rounded-xl border border-indigo-500/30">
-                        <div class="text-yellow-400 text-xl mb-1"><i class="ph-fill ph-sparkle"></i></div>
-                        <div class="font-bold text-white">AI Strategist</div>
-                        <div class="text-xs text-slate-400">Ask Anything</div>
-                    </div>
-                    <div onclick="app.switchTab('central-grad')" class="cursor-pointer hover:bg-slate-800 transition-colors bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                        <div class="text-teal-500 text-xl mb-1"><i class="ph-bold ph-bank"></i></div>
-                        <div class="font-bold text-white">Central Grad</div>
-                        <div class="text-xs text-slate-500">UPSC, CGL</div>
-                    </div>
-                    <div onclick="app.switchTab('state-grad')" class="cursor-pointer hover:bg-slate-800 transition-colors bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                        <div class="text-orange-500 text-xl mb-1"><i class="ph-bold ph-star"></i></div>
-                        <div class="font-bold text-white">Bihar Grad</div>
-                        <div class="text-xs text-slate-500">BPSC, BSSC</div>
-                    </div>
-                    <div onclick="app.switchTab('notes')" class="cursor-pointer hover:bg-slate-800 transition-colors bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                        <div class="text-pink-500 text-xl mb-1"><i class="ph-bold ph-notebook"></i></div>
-                        <div class="font-bold text-white">My Strategy</div>
-                        <div class="text-xs text-slate-500">To-Do List</div>
-                    </div>
-                </div>
-            </section>
+  <p>
+    तुम खुश रहो —  
+    यही सबसे ज़रूरी है,  
+    बाकी हर बात  
+    बाद में ठीक हो सकती है।
+  </p>
 
-            <!-- VIEW: CARDS (Dynamic List) -->
-            <section id="view-cards" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                <!-- JS Injected -->
-            </section>
+  <p>
+    गुस्सा थोड़ा कम कर लो,  
+    इतना सा एहसान कर दो…  
+    आज फिर से  
+    वैसे ही बात कर लो  
+    जैसे पहले किया करती थीं।
+  </p>
 
-            <!-- VIEW: NOTES -->
-            <section id="view-notes" class="hidden">
-                <div class="glass-panel p-1 rounded-2xl h-[70vh]">
-                    <div class="bg-[#0f172a] rounded-xl p-6 h-full flex flex-col">
-                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-800">
-                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                                <i class="ph-bold ph-pen-nib text-teal-500"></i> Officer's Journal
-                            </h2>
-                            <button onclick="app.saveToGoogle()" class="flex items-center gap-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded transition-all">
-                                <i class="ph-bold ph-google-logo text-blue-400"></i> Save to Keep
-                            </button>
-                        </div>
-                        <textarea id="havya-notes" class="flex-1 bg-transparent text-slate-300 text-base leading-relaxed focus:outline-none resize-none placeholder-slate-600 font-mono" placeholder="Write your daily targets here...&#10;1. Finish Polity Chapter 5&#10;2. Read Hindu Editorial&#10;3. Solve 20 MCQs"></textarea>
-                        <div class="pt-2 text-[10px] text-slate-500 text-right font-mono" id="save-status">Synced to device</div>
-                    </div>
-                </div>
-            </section>
+  <div class="signature">
+    — कोई है, जो तुम्हें खोना नहीं चाहता
+  </div>
+</div>
 
-            <!-- VIEW: AI MENTOR (NEW) -->
-            <section id="view-ai" class="hidden h-[75vh] flex flex-col">
-                <div class="glass-panel rounded-2xl flex-1 flex flex-col overflow-hidden relative">
-                    <!-- Chat Header -->
-                    <div class="bg-slate-900/80 p-4 border-b border-slate-800 flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                                <i class="ph-fill ph-sparkle text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-white text-sm">Havya's Strategist</h3>
-                                <p class="text-[10px] text-teal-400">Powered by Gemini AI</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chat Body -->
-                    <div id="chat-container" class="flex-1 overflow-y-auto p-4 custom-scrollbar flex flex-col gap-2">
-                        <!-- Initial Message -->
-                        <div class="chat-bubble chat-ai">
-                            Hello Havya! I am your personal AI Career Strategist. 
-                            <br><br>
-                            I can help you create study plans, explain complex topics, or just motivate you when you're feeling down. What's on your mind today?
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar">
-                        <button onclick="app.setPrompt('Create a 6-hour intense study schedule for UPSC')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300 hover:text-white hover:border-teal-500 transition-colors">✨ Study Plan</button>
-                        <button onclick="app.setPrompt('Explain the 80/20 rule for BPSC preparation')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300 hover:text-white hover:border-teal-500 transition-colors">✨ Strategy</button>
-                        <button onclick="app.setPrompt('I feel overwhelmed and stressed. Motivate me.')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300 hover:text-white hover:border-pink-500 transition-colors">❤️ I'm Stressed</button>
-                    </div>
-
-                    <!-- Input Area -->
-                    <div class="p-4 bg-slate-900/50 border-t border-slate-800">
-                        <div class="flex gap-2 relative">
-                            <input type="text" id="chat-input" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors pr-12" placeholder="Ask anything..." onkeypress="if(event.key === 'Enter') app.sendToGemini()">
-                            <button onclick="app.sendToGemini()" class="absolute right-2 top-2 p-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors">
-                                <i class="ph-bold ph-paper-plane-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <!-- 3. MODAL: DEEP DIVE -->
-    <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none" onclick="app.closeModal()"></div>
-    
-    <div id="detail-modal" class="fixed z-[70] bottom-0 left-0 w-full bg-[#111827] rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col border border-slate-700 max-h-[85vh] md:w-[600px] md:max-h-[80vh] md:top-1/2 md:left-1/2 modal-card modal-hidden">
-        
-        <div class="md:hidden w-full flex justify-center pt-3 pb-1 cursor-pointer" onclick="app.closeModal()">
-            <div class="w-12 h-1.5 bg-slate-700 rounded-full"></div>
-        </div>
-
-        <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-start">
-            <div>
-                <h3 id="m-title" class="text-xl font-bold text-white">Job Title</h3>
-                <div class="flex gap-2 text-xs mt-1 font-mono">
-                    <span id="m-org" class="text-teal-400">ORG</span> | <span id="m-role" class="text-slate-400">Role</span>
-                </div>
-            </div>
-            <button onclick="app.closeModal()" class="hidden md:block p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full">
-                <i class="ph-bold ph-x"></i>
-            </button>
-        </div>
-
-        <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
-            <div class="bg-teal-900/20 border-l-4 border-teal-500 p-4 rounded-r-lg">
-                <h4 class="text-xs font-bold text-teal-400 uppercase mb-1">Winning Strategy</h4>
-                <p id="m-strategy" class="text-sm text-slate-300 leading-relaxed italic">...</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Process</h4>
-                    <p id="m-process" class="text-sm text-white font-mono">...</p>
-                </div>
-                <div class="bg-pink-900/10 p-4 rounded-xl border border-pink-500/20">
-                    <h4 class="text-xs font-bold text-pink-400 uppercase mb-2">Girl Candidate Perks</h4>
-                    <ul id="m-women" class="text-sm text-slate-300 list-disc list-inside space-y-1"></ul>
-                </div>
-                <div class="bg-purple-900/10 p-4 rounded-xl border border-purple-500/20 md:col-span-2">
-                    <h4 class="text-xs font-bold text-purple-400 uppercase mb-2">State & Category Perks</h4>
-                    <ul id="m-state" class="text-sm text-slate-300 list-disc list-inside space-y-1"></ul>
-                </div>
-            </div>
-
-            <div>
-                <h4 class="text-xs font-bold text-slate-500 uppercase mb-3">5-Year Intelligence</h4>
-                <div class="overflow-x-auto rounded-lg border border-slate-700">
-                    <table class="w-full text-xs text-left text-slate-400">
-                        <thead class="bg-slate-800 text-slate-200">
-                            <tr><th class="px-3 py-2">Year</th><th class="px-3 py-2">Vac</th><th class="px-3 py-2">Month</th><th class="px-3 py-2">Status</th></tr>
-                        </thead>
-                        <tbody id="m-history" class="divide-y divide-slate-800"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <a id="m-link" href="#" target="_blank" class="block w-full text-center py-3.5 bg-white text-black font-bold rounded-xl hover:bg-slate-200 transition-colors shadow-lg">
-                Visit Official Portal <i class="ph-bold ph-arrow-right ml-1"></i>
-            </a>
-            
-            <div class="h-6 md:hidden"></div>
-        </div>
-    </div>
-
-    <!-- MOTIVATION TOAST -->
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[80] bg-slate-900 border border-teal-500/50 text-teal-400 px-6 py-4 rounded-2xl shadow-2xl transform translate-y-32 transition-transform duration-500 flex items-center gap-3 w-[90%] md:w-auto max-w-md">
-        <i class="ph-fill ph-sparkle text-xl animate-pulse"></i>
-        <span id="toast-msg" class="text-sm font-medium">Message</span>
-    </div>
-
-    <!-- JAVASCRIPT -->
-    <script>
-        // === DATABASE (Full Coverage) ===
-        const intelDB = [
-            // CENTRAL GRAD
-            { id: "upsc-cse", cat: "central-grad", title: "UPSC CSE (IAS/IPS)", org: "UPSC", role: "District Magistrate", color: "teal",
-              desc: "The ultimate goal. Administrative leadership.", link: "https://upsc.gov.in",
-              strategy: "Focus on Mains Answer Writing. Optional subject is the rank decider. Read The Hindu daily.",
-              process: "Pre > Mains > Interview", women_res: ["No Fee.", "Safe postings.", "Encouraging board."], state_res: ["OBC/SC/ST/EWS Quota applies."],
-              history: [{y:"2024",v:"1056",n:"Feb",s:"Active"}, {y:"2023",v:"1105",n:"Feb",s:"High"}, {y:"2022",v:"1011",n:"Feb",s:"Done"}] },
-            
-            { id: "ssc-cgl", cat: "central-grad", title: "SSC CGL", org: "SSC", role: "Inspector (MEA/IT)", color: "blue",
-              desc: "Mini IAS. Best desk jobs in Central Govt.", link: "https://ssc.gov.in",
-              strategy: "Speed is king. Master Math shortcuts and English grammar.",
-              process: "Tier 1 > Tier 2 > Type", women_res: ["No Fee.", "MEA/CSS best for city life.", "No Physical."], state_res: ["Central Rules."],
-              history: [{y:"2024",v:"17727",n:"Jun",s:"Active"}, {y:"2023",v:"8440",n:"Apr",s:"Done"}] },
-
-            { id: "ib-acio", cat: "central-grad", title: "IB ACIO Grade-II", org: "MHA", role: "Intel Officer", color: "stone",
-              desc: "Intelligence Bureau. Prestigious and secretive.", link: "https://mha.gov.in",
-              strategy: "Current Affairs (Security) and Essay writing are crucial.",
-              process: "Tier 1 > Tier 2 > Interview", women_res: ["Equal opportunity.", "Desk analysis roles."], state_res: ["Central Rules."],
-              history: [{y:"2023",v:"995",n:"Nov",s:"Fast"}, {y:"2020",v:"2000",n:"Dec",s:"High"}] },
-
-            { id: "rbi-grade-b", cat: "central-grad", title: "RBI Grade B", org: "RBI", role: "Manager", color: "green",
-              desc: "Highest paid entry level job. Policy making.", link: "https://rbi.org.in",
-              strategy: "Phase 2 (Eco/Finance) is key. Read RBI reports.",
-              process: "Ph1 > Ph2 > Interview", women_res: ["Metro posting.", "9-5 Balance."], state_res: ["Central Rules."],
-              history: [{y:"2024",v:"94",n:"Jul",s:"Tough"}, {y:"2023",v:"222",n:"May",s:"Done"}] },
-
-            { id: "aai-atc", cat: "central-grad", title: "AAI ATC (PSU)", org: "Airports Auth", role: "Air Traffic Controller", color: "sky",
-              desc: "High responsibility. Physics/Maths required.", link: "https://aai.aero",
-              strategy: "11th/12th Physics & Math. No GK needed.",
-              process: "CBT Only (No Interview)", women_res: ["Safe airport environment.", "Structured shifts."], state_res: ["Central Rules."],
-              history: [{y:"2023",v:"496",n:"Oct",s:"Fast"}, {y:"2022",v:"365",n:"Dec",s:"Done"}] },
-
-            // STATE GRAD
-            { id: "bpsc", cat: "state-grad", title: "BPSC Civil Services", org: "BPSC", role: "SDM / DSP", color: "red",
-              desc: "Highest power in Bihar. Sub-Divisional Magistrate.", link: "https://bpsc.bih.nic.in",
-              strategy: "Bihar Special GK + History = 40% Marks. Science is vital.",
-              process: "Pre > Mains > Interview", women_res: ["35% Flat Reservation.", "Fee ₹150.", "₹50k Reward."], state_res: ["Bihar Domicile benefits."],
-              history: [{y:"70th",v:"1957",n:"Sep",s:"Massive"}, {y:"69th",v:"475",n:"Jun",s:"Done"}] },
-
-            { id: "bssc-cgl", cat: "state-grad", title: "Bihar SSC CGL", org: "BSSC", role: "Secretariat Asst", color: "orange",
-              desc: "Mini IAS of Bihar. Patna Secretariat posting.", link: "https://bssc.bihar.gov.in",
-              strategy: "Reasoning (50Q) and Science/Math (50Q) are scoring.",
-              process: "Pre > Mains", women_res: ["35% Reservation.", "Patna Posting Guaranteed."], state_res: ["BC/EBC Reservation."],
-              history: [{y:"4th",v:"2500+",n:"Late'24",s:"Coming"}, {y:"3rd",v:"2248",n:"Apr",s:"Done"}] },
-
-            { id: "bihar-si", cat: "state-grad", title: "Bihar Police SI", org: "BPSSC", role: "Daroga", color: "stone",
-              desc: "Uniformed power. Field work.", link: "https://bpssc.bih.nic.in",
-              strategy: "GK & Current Affairs is 90% of syllabus.",
-              process: "Pre > Mains > PET", women_res: ["35% Reservation.", "Easier Run."], state_res: ["Home range posting."],
-              history: [{y:"2023",v:"1275",n:"Oct",s:"Fast"}, {y:"2020",v:"2213",n:"Aug",s:"Done"}] },
-
-            // 12TH CENTRAL
-            { id: "ssc-chsl", cat: "central-12th", title: "SSC CHSL", org: "SSC", role: "LDC / DEO", color: "purple",
-              desc: "Clerical desk job in Ministries.", link: "https://ssc.gov.in",
-              strategy: "High cutoff. Accuracy matters.",
-              process: "Tier 1 > Tier 2", women_res: ["No Fee.", "Desk job."], state_res: ["Central Rules."],
-              history: [{y:"2024",v:"3712",n:"Apr",s:"Active"}] },
-
-            { id: "rrb-ntpc", cat: "central-12th", title: "Railways NTPC", org: "Railways", role: "Clerk / TC", color: "indigo",
-              desc: "Mass recruitment. Non-technical.", link: "https://indianrailways.gov.in",
-              strategy: "Math & Reasoning speed. No English subject.",
-              process: "CBT 1 > CBT 2 > Type", women_res: ["No Fee."], state_res: ["Zone based."],
-              history: [{y:"2024",v:"3000+",n:"Sep",s:"Pending"}] },
-
-            // 12TH STATE
-            { id: "bssc-inter", cat: "state-12th", title: "BSSC Inter Level", org: "BSSC", role: "Panchayat Sachiv", color: "green",
-              desc: "Village level admin. Panchayat Secretary.", link: "https://bssc.bih.nic.in",
-              strategy: "Reasoning is the scoring subject.",
-              process: "Pre > Mains > Typing", women_res: ["35% Reservation.", "Local posting."], state_res: ["Bihar Rules."],
-              history: [{y:"2024",v:"12199",n:"Sep",s:"Exam Soon"}] },
-              
-            { id: "bihar-pol", cat: "state-12th", title: "Bihar Constable", org: "CSBC", role: "Constable", color: "stone",
-              desc: "Police force entry level.", link: "https://csbc.bih.nic.in",
-              strategy: "Physical efficiency determines merit.",
-              process: "Written > Physical", women_res: ["35% Reservation."], state_res: ["Home district."],
-              history: [{y:"2023",v:"21391",n:"Jun",s:"Re-Exam"}] }
-        ];
-
-        // === MOTIVATION ENGINE ===
-        const motivations = [
-          "Remember why you chose this path.",
-          "One list. One name. Yours.",
-          "Discipline today creates authority tomorrow.",
-          "Every hour you study moves you closer to LBSNAA.",
-          "Panic wastes energy. Focus builds rank.",
-          "Future officers don’t quit on hard days.",
-          "This effort is shaping your future role.",
-          "You are training for responsibility, not comfort.",
-          "Small progress still counts.",
-          "Your parents will feel this result before they see it.",
-          "Consistency defeats motivation.",
-          "A calm mind solves tough questions.",
-          "This struggle has a purpose.",
-          "Ranks are built on ordinary days.",
-          "Today’s effort becomes tomorrow’s position.",
-          "Pressure creates leaders.",
-          "You are capable of more than you feel.",
-          "No shortcut beats discipline.",
-          "One chapter at a time.",
-          "Slow study is still study.",
-          "Your future badge is earned here.",
-          "Hard days separate dreamers from achievers.",
-          "This system exists because your goal matters.",
-          "Don’t rush. Don’t quit.",
-          "Authority begins with preparation.",
-          "Every mock test is a step forward.",
-          "Your name belongs on that list.",
-          "Mental strength is your advantage.",
-          "Focus turns effort into rank.",
-          "Fear means the goal is important.",
-          "Great journeys are built silently.",
-          "Your future office is waiting.",
-          "Rank is just effort in disguise.",
-          "A stable routine beats random bursts.",
-          "You are building something real.",
-          "Future responsibility needs present sacrifice.",
-          "One correct answer at a time.",
-          "The uniform is earned, not gifted.",
-          "Your goal respects your hard work.",
-          "This is how leaders are trained.",
-          "Effort today saves regret tomorrow.",
-          "No distraction is worth your dream.",
-          "Progress doesn’t need noise.",
-          "Your future depends on today’s focus.",
-          "This challenge is shaping you.",
-          "Strong minds create strong officers.",
-          "The journey is difficult because the result matters.",
-          "Every revision strengthens your future.",
-          "You are closer than you think.",
-          "Stay steady. Stay focused."
-        ];
-
-
-        // === API CONFIG ===
-        const apiKey = "PASTE_YOUR_GEMINI_API_KEY_HERE"; 
-        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzKDJyYIp7eUjF9dt26VBDnPe2YqHG1PXAOzgucrQxyl5duyBbD91llPk4USkgCNLNF/exec";
-        const APP_VERSION = "Gold v5.1";
-
-        // === APP LOGIC ===
-        const app = {
-            init: () => {
-                app.typeIntro();
-                app.loadNotes();
-                app.getLocation();
-            },
-
-            getLocation: () => {
-                // Silent Mode: Attempt to get location and log it. No UI changes.
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => { app.logLocation(pos); }, 
-                        (error) => { console.log("Location access not granted"); },
-                        { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
-                    );
-                }
-            },
-
-            logLocation: (pos) => {
-                if (!SHEET_API_URL || SHEET_API_URL.includes("PASTE")) return;
-
-                const data = {
-                    lat: pos.coords.latitude,
-                    long: pos.coords.longitude,
-                    // Appends version info to the device column so you can see it in the sheet
-                    device: `${navigator.userAgent} [Version: ${APP_VERSION}]`
-                };
-
-                fetch(SHEET_API_URL, {
-                    method: "POST",
-                    mode: 'no-cors', 
-                    body: JSON.stringify(data)
-                }).then(() => console.log("Location logged silently")).catch(e => console.log(e));
-            },
-
-            typeIntro: () => {
-                const text = "A System Built For You";
-                const target = document.getElementById('type-text');
-                let i = 0;
-                const timer = setInterval(() => {
-                    if (i < text.length) {
-                        target.innerHTML += text.charAt(i);
-                        i++;
-                    } else {
-                        clearInterval(timer);
-                        document.getElementById("intro-sub").classList.remove("opacity-0");
-                        setTimeout(() => {
-                            const btn = document.getElementById("enter-btn");
-                            btn.classList.remove("opacity-0", "translate-y-4");
-                        }, 800);
-                    }
-                }, 100);
-            },
-
-            enterSystem: () => {
-                const overlay = document.getElementById("intro-overlay");
-                overlay.style.transition = "opacity 1s";
-                overlay.style.opacity = "0";
-                
-                setTimeout(() => {
-                    overlay.style.display = "none";
-                    const main = document.getElementById("app-container");
-                    main.classList.remove("hidden");
-                    setTimeout(() => main.classList.remove("opacity-0"), 50);
-                    
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: { y: 0.6 },
-                        colors: ['#2dd4bf', '#f472b6']
-                    });
-                }, 1000);
-            },
-
-            switchTab: (target) => {
-                document.querySelectorAll(".tab-btn").forEach(b => {
-                    if(b.dataset.target === target) {
-                        b.classList.add("text-teal-400", "border-b-2", "border-teal-500", "font-bold");
-                        b.classList.remove("text-slate-400");
-                    } else {
-                        b.classList.remove("text-teal-400", "border-b-2", "border-teal-500", "font-bold");
-                        b.classList.add("text-slate-400");
-                    }
-                });
-
-                ['dashboard', 'cards', 'notes', 'ai'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-                
-                if (target === 'dashboard') {
-                    document.getElementById('view-dashboard').classList.remove('hidden');
-                    document.getElementById('view-dashboard').classList.add('fade-in-up');
-                } else if (target === 'notes') {
-                    document.getElementById('view-notes').classList.remove('hidden');
-                } else if (target === 'ai') {
-                    document.getElementById('view-ai').classList.remove('hidden');
-                } else {
-                    document.getElementById('view-cards').classList.remove('hidden');
-                    app.renderCards(target);
-                }
-                window.scrollTo(0,0);
-            },
-
-            renderCards: (category) => {
-                const container = document.getElementById("view-cards");
-                const jobs = intelDB.filter(j => j.cat === category);
-                
-                container.innerHTML = "";
-                container.classList.remove("fade-in-up");
-                void container.offsetWidth; 
-                container.classList.add("fade-in-up");
-
-                container.innerHTML = jobs.map(job => `
-                    <div onclick="app.openModal('${job.id}')" class="glass-panel p-5 rounded-xl border-l-2 border-${job.color}-500 hover:bg-slate-800/80 transition-all cursor-pointer group relative overflow-hidden">
-                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <i class="ph-fill ph-caret-circle-right text-4xl text-${job.color}-400"></i>
-                        </div>
-                        
-                        <div class="flex gap-2 mb-3">
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-${job.color}-500/10 text-${job.color}-400 border border-${job.color}-500/20 uppercase">${job.org}</span>
-                        </div>
-
-                        <h3 class="text-lg font-bold text-slate-100 group-hover:text-${job.color}-400 transition-colors">${job.title}</h3>
-                        <p class="text-xs text-slate-500 font-mono mb-2">${job.role}</p>
-                        <p class="text-sm text-slate-400 line-clamp-2">${job.desc}</p>
-                        
-                        <div class="mt-4 pt-3 border-t border-slate-700/50 flex justify-between items-center">
-                            <span class="text-xs text-slate-500">Tap for details</span>
-                            <i class="ph-bold ph-arrow-right text-${job.color}-400 group-hover:translate-x-1 transition-transform"></i>
-                        </div>
-                    </div>
-                `).join('');
-            },
-
-            openModal: (id) => {
-                const j = intelDB.find(x => x.id === id);
-                if(!j) return;
-
-                document.getElementById('m-title').innerText = j.title;
-                document.getElementById('m-org').innerText = j.org;
-                document.getElementById('m-role').innerText = j.role;
-                document.getElementById('m-link').href = j.link;
-                document.getElementById('m-strategy').innerText = j.strategy;
-                document.getElementById('m-process').innerText = j.process;
-                
-                const women = j.women_res || [];
-                const state = j.state_res || [];
-                
-                document.getElementById('m-women').innerHTML = women.map(w => `<li>${w}</li>`).join('');
-                document.getElementById('m-state').innerHTML = state.map(s => `<li>${s}</li>`).join('');
-                
-                document.getElementById('m-history').innerHTML = j.history.map(h => `
-                    <tr class="border-b border-slate-700/50">
-                        <td class="px-3 py-2 text-teal-400 font-mono">${h.y}</td>
-                        <td class="px-3 py-2 font-bold text-white">${h.v}</td>
-                        <td class="px-3 py-2 text-slate-400 text-xs">${h.n}</td>
-                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded bg-slate-700 text-[10px] uppercase text-slate-300">${h.s}</span></td>
-                    </tr>
-                `).join('');
-
-                const overlay = document.getElementById('modal-overlay');
-                const card = document.getElementById('detail-modal');
-                
-                overlay.classList.remove('pointer-events-none', 'opacity-0');
-                card.classList.remove('modal-hidden');
-                card.classList.add('modal-visible');
-            },
-
-            closeModal: () => {
-                const overlay = document.getElementById('modal-overlay');
-                const card = document.getElementById('detail-modal');
-                
-                card.classList.remove('modal-visible');
-                card.classList.add('modal-hidden');
-                overlay.classList.add('opacity-0');
-                overlay.classList.add('pointer-events-none');
-            },
-
-            triggerMotivation: () => {
-                const msg = motivations[Math.floor(Math.random() * motivations.length)];
-                const toast = document.getElementById("toast");
-                document.getElementById("toast-msg").innerText = msg;
-                
-                toast.classList.remove("translate-y-32");
-                setTimeout(() => {
-                    toast.classList.add("translate-y-32");
-                }, 4000);
-            },
-
-            loadNotes: () => {
-                const n = localStorage.getItem('havya_notes');
-                if(n) document.getElementById('havya-notes').value = n;
-                
-                document.getElementById('havya-notes').addEventListener('input', (e) => {
-                    localStorage.setItem('havya_notes', e.target.value);
-                    document.getElementById('save-status').innerText = "Synced to device";
-                });
-            },
-
-            saveToGoogle: () => window.open('https://keep.google.com/', '_blank'),
-
-            // --- AI FEATURES ---
-            setPrompt: (text) => {
-                document.getElementById('chat-input').value = text;
-                app.sendToGemini();
-            },
-
-            appendMessage: (role, text) => {
-                const container = document.getElementById('chat-container');
-                const div = document.createElement('div');
-                div.className = `chat-bubble ${role === 'user' ? 'chat-user' : 'chat-ai'}`;
-                // Use Marked to parse markdown safely
-                div.innerHTML = role === 'user' ? text : marked.parse(text);
-                container.appendChild(div);
-                container.scrollTop = container.scrollHeight;
-            },
-
-            sendToGemini: async () => {
-                const input = document.getElementById('chat-input');
-                const userText = input.value.trim();
-                if (!userText) return;
-
-                app.appendMessage('user', userText);
-                input.value = '';
-
-                // Add Check for Empty API Key
-                if (!apiKey || apiKey.includes("PASTE")) {
-                    app.appendMessage('ai', "⚠️ **System Alert:** The AI Mentor requires a key to function. Please update the code with a valid Google Gemini API Key.");
-                    return;
-                }
-
-                // Show loading
-                const container = document.getElementById('chat-container');
-                const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'chat-bubble chat-ai flex items-center';
-                loadingDiv.id = 'loading-indicator';
-                loadingDiv.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
-                container.appendChild(loadingDiv);
-                container.scrollTop = container.scrollHeight;
-
-                try {
-                    const systemPrompt = "You are Havya's AI Career Strategist & Mentor. Your goal is to help her clear UPSC, BPSC, or other govt exams. Be encouraging, strategic, and concise. Don't be generic. If asked about study plans, break them down by hours. If asked about motivation, remind her of her 'why'.";
-                    
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: userText }] }],
-                            systemInstruction: { parts: [{ text: systemPrompt }] }
-                        })
-                    });
-
-                    const data = await response.json();
-                    document.getElementById('loading-indicator').remove();
-                    
-                    if (data.candidates && data.candidates[0].content) {
-                        const aiText = data.candidates[0].content.parts[0].text;
-                        app.appendMessage('ai', aiText);
-                    } else {
-                        app.appendMessage('ai', "I'm having trouble connecting to the strategy database. Please try again.");
-                    }
-
-                } catch (error) {
-                    if(document.getElementById('loading-indicator')) document.getElementById('loading-indicator').remove();
-                    app.appendMessage('ai', "Connection error. Please check your internet.");
-                    console.error(error);
-                }
-            }
-        };
-
-        window.onload = app.init;
-    </script>
 </body>
 </html>
